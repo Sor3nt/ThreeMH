@@ -100,6 +100,8 @@ MANHUNT.fileLoader.TEX = function () {
                         realTexture.format = parsed.format;
                         realTexture.mipmaps = parsed.mipmaps;
                         realTexture.image = parsed.mipmaps[0];
+                        realTexture.wrapS =  THREE.RepeatWrapping;
+                        realTexture.wrapT =  THREE.RepeatWrapping;
 
                         realTexture.needsUpdate = true;
                         realTexture.name = texture.name;

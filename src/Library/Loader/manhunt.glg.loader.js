@@ -28,9 +28,21 @@ MANHUNT.fileLoader.GLG = function () {
                     singleOption = singleOption.replace("\t", ' ');
                     var attrValue = singleOption.split(' ');
 
+                    var attr = attrValue[0].trim();
+                    var value = attrValue[1].trim();
+
+                    if (attr === "LOD_DATA"){
+                        var vec4 = [];
+                        value.split(',').forEach(function (val) {
+                            vec4.push( parseInt(val) )
+                        });
+
+                        value = new THREE.Vector4(vec4[0],vec4[1],vec4[2],vec4[3]);
+                    }
+
                     options.push({
-                        'attr' : attrValue[0].trim(),
-                        'value' : attrValue[1].trim()
+                        'attr' : attr,
+                        'value' : value
                     });
 
                 }else{
@@ -52,6 +64,18 @@ MANHUNT.fileLoader.GLG = function () {
                     options.forEach(function (option) {
                         if (option.attr === attr) found = option.value;
                     });
+
+                    return found;
+                },
+                getValues: function(attr, index){
+                    if (attr === "NAME") return [name];
+
+                    var found = [];
+                    options.forEach(function (option) {
+                        if (option.attr === attr) found.push(option.value);
+                    });
+
+                    if (typeof index !== "undefined") return found[index];
 
                     return found;
                 },

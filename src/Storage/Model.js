@@ -38,8 +38,25 @@ MANHUNT.storage.Model = function () {
                 return false;
             }
 
-            self._cache[name] = found;
-            return found;
+            // self._cache[name] = found;
+            return {
+                get: function () {
+                    return found;
+                },
+
+                LODLength: found.children.length,
+
+                enableLOD: function(lodIndex){
+                    found.children[found.userData.LODIndex].visible = false;
+                    found.userData.LODIndex = lodIndex;
+                    found.children[found.userData.LODIndex].visible = true;
+                },
+
+                getLOD: function (lodIndex) {
+                    return found.children[lodIndex];
+
+                }
+            };
         }
 
     };

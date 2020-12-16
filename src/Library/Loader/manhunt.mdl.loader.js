@@ -604,66 +604,163 @@ MANHUNT.fileLoader.MDL = function () {
     function MdlModelConverter( model ){
 
         var self = {
-            skeleton: {},
-            geometry: {},
-            mesh: {},
-            material: [],
 
-            _uv2ForFaces : [],
-            _bones : [],
+            _rootBone : {},
+            _meshBone : {},
             _allBones : [],
-            _materialForFace : [],
+            _mesh: new THREE.Mesh(),
 
             _init: function(){
-                self._prepareMaterialForFace();
+                var bones = self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
+                // console.log(skeleton);
 
-                self._bones = self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
-                self.skeleton = new THREE.Skeleton( self._allBones );
+                var entryIndex = 0;
+                model.objects.forEach(function (entry) {
+                    var skeleton = new THREE.Skeleton( self._allBones );
+                    // self._allBones = [];
+                    // self._meshBone = [];
 
-                self._createMaterial();
-                self._createGeometry();
+                    var i;
+                    var materialForFace = [];
+                    var material = [];
 
-                self.geometry.colorsNeedUpdate = true;
-                self.geometry.normalsNeedUpdate = true;
-                // self.geometry.computeFaceNormals();
-                // self.geometry.computeVertexNormals();
+                    var geometry = new THREE.Geometry();
+                    geometry.colorsNeedUpdate = true;
+                    geometry.normalsNeedUpdate = true;
 
-                var bufferGeometry = new THREE.BufferGeometry();
-                bufferGeometry.fromGeometry( self.geometry );
-                // bufferGeometry.setAttribute( 'uv2', new THREE.BufferAttribute( new Float32Array(self._uv2ForFaces), 2 ) );
+                    geometry.faceVertexUvs = [[]];
+
+                    //Material per face
+                    entry.object.mtlIds.forEach(function (mtl, index) {
+                        for(i = mtl.StartFaceID; i <= mtl.StartFaceID + mtl.MaterialIDNumFace; i++){
+                            materialForFace[i] = mtl;
+                        }
+                    });
+
+                    entry.materials.forEach(function (materialObj) {
+                        var texture = MANHUNT.level.getStorage('tex').find(materialObj.TexName);
+                        var mat = new THREE.MeshStandardMaterial();
+                        mat.name = materialObj.TexName;
+                        mat.map = texture;
+                        mat.skinning = true;
+                        mat.vertexColors = THREE.VertexColors;
+                        mat.needsUpdate = true;
+                        mat.transparent = texture.format === THREE.RGBA_S3TC_DXT5_Format;
+
+                        material.push(
+                            mat
+                        );
+                    });
+
+                    entry.object.vertex.forEach(function (vertex, index) {
+
+                        //Generate Vertex
+                        var vertexVec3 = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
+                        vertexVec3.applyMatrix4(self._meshBone.matrix);
+                        geometry.vertices.push( vertexVec3 );
+
+                        //Generate Skin Indices and Weights
+                        var skinIndices = new THREE.Vector4();
+                        var skinWeights = new THREE.Vector4();
+
+                        if (vertex.maxWeight !== 0){
+                            skinIndices = new THREE.Vector4(
+                                vertex.boneID1,
+                                vertex.boneID2,
+                                vertex.boneID3,
+                                vertex.boneID4
+                            );
+
+                            skinWeights = new THREE.Vector4(
+                                vertex.weight1,
+                                vertex.weight2,
+                                vertex.weight3,
+                                vertex.weight4,
+                            );
+
+                        }
+
+                        geometry.skinIndices.push(skinIndices);
+                        geometry.skinWeights.push(skinWeights);
 
 
-                // bufferGeometry.attributes.uv2 = bufferGeometry.attributes.uv;
-                // var uvs = [ 0, 1, 1, 1, 0, 0, 1, 0 ];
-                // bufferGeometry.addAttribute( 'uv2', bufferGeometry.attributes.uv );
-// console.log(bufferGeometry);
-// consss.loog();
-                // bufferGeometry.setAttribute( 'vertexColor', new THREE.BufferAttribute( new Float32Array(self.geometry.colors), 3 ) );
-                bufferGeometry.colorsNeedUpdate = true;
-                // bufferGeometry.computeVertexNormals();
-                bufferGeometry.computeBoundingSphere();
-                // bufferGeometry.computeFaceNormals();
-                // bufferGeometry.computeVertexNormals();
-                // bufferGeometry.computeMorphNormals();
+                    });
 
-                // bufferGeometry.setAttribute('color', new Float32Array(self.geometry.colors));
-                var mesh = new THREE.SkinnedMesh( bufferGeometry, self.material );
-                mesh.add( self._allBones[ 0 ] );
-                mesh.bind(self.skeleton);
-// mesh.frustumCulled = false;
-                // console.log(mesh);
-                // mesh.material.metallness = 0;
+                    //Generate Faces, normals and vertex colors
+                    var faceIndex = entry.object.faceindex;
+                    for(var x = 0; x < faceIndex.length; x++){
+                        var face = new THREE.Face3( faceIndex[x],  faceIndex[x + 1], faceIndex[x + 2] );
+                        face.materialIndex = materialForFace[x].MaterialID;
 
-                // mesh.geometry.computeBoundingBox();
-                self.mesh = mesh;
-            },
+                        face.vertexNormals =[
+                            entry.object.normals[face.a],
+                            entry.object.normals[face.b],
+                            entry.object.normals[face.c]
+                        ];
 
-            _prepareMaterialForFace: function(){
-                model.objects[0].object.mtlIds.forEach(function (mtl, index) {
-                    for(var m = mtl.StartFaceID; m <= mtl.StartFaceID + mtl.MaterialIDNumFace; m++){
-                        self._materialForFace[m] = mtl;
+                        if (entry.object.skinDataFlag === true) {
+                            face.vertexColors = [
+                                entry.object.CPV_array[face.a],
+                                entry.object.CPV_array[face.b],
+                                entry.object.CPV_array[face.c]
+                            ];
+                        }
+
+                        if(entry.object.UV1_array.length > 0){
+                            geometry.faceVertexUvs[0].push([
+                                new THREE.Vector2(
+                                    entry.object.UV1_array[face.a][0],
+                                    entry.object.UV1_array[face.a][1]
+                                ),
+                                new THREE.Vector2(
+                                    entry.object.UV1_array[face.b][0],
+                                    entry.object.UV1_array[face.b][1]
+                                ),
+                                new THREE.Vector2(
+                                    entry.object.UV1_array[face.c][0],
+                                    entry.object.UV1_array[face.c][1]
+                                ),
+                            ]);
+                            geometry.uvsNeedUpdate = true;
+                        }
+
+
+                        geometry.faces.push(face);
+                        x += 2;
                     }
+
+
+                    var bufferGeometry = new THREE.BufferGeometry();
+                    bufferGeometry.fromGeometry( geometry );
+
+                    bufferGeometry.colorsNeedUpdate = true;
+                    bufferGeometry.computeBoundingSphere();
+
+                    var mesh;
+                    if (entryIndex === 0) {
+                        mesh = new THREE.SkinnedMesh(bufferGeometry, material);
+                    }else{
+                        mesh = new THREE.Mesh(bufferGeometry, material);
+                    }
+                    mesh.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
+                    mesh.visible = entryIndex === 0;
+                    //
+                    // if (entryIndex > 0){
+                    //     console.log("JAAA");
+                    //     // mesh.position.x = entry.object.Position[0] * 48;
+                    //     // mesh.position.y = 0;
+                    //     // mesh.position.z = entry.object.Position[2] * 48;
+                    // }
+                    self._mesh.children.push(mesh);
+
+                    if (entryIndex === 0) {
+                        mesh.add(self._allBones[0]);
+                        mesh.bind(skeleton);
+                    }
+                    entryIndex++;
                 });
+
+                self._mesh.userData.LODIndex = 0;
             },
 
             _generateBoneStructure(boneData, objectParentBoneOffset){
@@ -672,14 +769,14 @@ MANHUNT.fileLoader.MDL = function () {
                 var tBone = self._createBone(boneData);
 
                 if (boneData.myBoneOffset === objectParentBoneOffset){
-                    meshBone = tBone;
-                    meshBone.userData.rootBone = true;
+                    self._meshBone = tBone;
+                    tBone.userData.meshBone = true;
                 }
 
 
                 if (boneData.myBoneOffset === boneData.rootBoneOffset){
-                    rootBone = tBone;
-                    rootBone.userData.rootBone = true;
+                    self._rootBone = tBone;
+                    tBone.userData.rootBone = true;
                 }
 
                 bones.push(tBone);
@@ -707,7 +804,7 @@ MANHUNT.fileLoader.MDL = function () {
 
                 var bone = new THREE.Bone();
                 // if (data.skinDataFlag === true){
-                    bone.applyMatrix4(mat4);
+                bone.applyMatrix4(mat4);
                 //
                 // }
 
@@ -717,180 +814,12 @@ MANHUNT.fileLoader.MDL = function () {
                 return bone;
             },
 
-            _createGeometry: function () {
-                self.geometry = new THREE.Geometry();
-                self._createGeometryVertex();
-                self._createGeometryBoneWeight();
-                self._createGeometryFaces();
-                self._createGeometryUV1();
-
-
-
-                // self.geometry.colorsNeedUpdate = true;
-
-            },
-
-            _createGeometryBoneWeight: function(){
-                model.objects[0].object.vertex.forEach(function (vertex) {
-
-                    // Set Bones and weight
-                    var skinIndices = new THREE.Vector4();
-                    var skinWeights = new THREE.Vector4();
-
-                    if (vertex.maxWeight !== 0){
-                        skinIndices = new THREE.Vector4(
-                            vertex.boneID1,
-                            vertex.boneID2,
-                            vertex.boneID3,
-                            vertex.boneID4
-                        );
-
-                        skinWeights = new THREE.Vector4(
-                            vertex.weight1,
-                            vertex.weight2,
-                            vertex.weight3,
-                            vertex.weight4,
-                        );
-
-                    }
-                    self.geometry.skinIndices.push(skinIndices);
-                    self.geometry.skinWeights.push(skinWeights);
-                });
-            },
-
-            _createGeometryUV1: function(){
-                // console.log(model.objects[0].object.UV1_array.length, model.objects[0].object.UV2_array.length);
-// console.log("hier", model.objects[0].object);
-                if (model.objects[0].object.UV1_array.length > 0){
-
-                    //generate UV map
-                    var uvForFaces = [];
-                    self._uv2ForFaces = [];
-                    self.geometry.faces.forEach(function (face, faceIndex) {
-                        // console.log("face", face);
-                        // face.normal
-                        //
-                        face.vertexNormals =[
-                            model.objects[0].object.normals[face.a],
-                            model.objects[0].object.normals[face.b],
-                            model.objects[0].object.normals[face.c]
-                        ];
-
-                        if (model.objects[0].object.skinDataFlag === true) {
-                            face.vertexColors = [
-                                model.objects[0].object.CPV_array[face.a],
-                                model.objects[0].object.CPV_array[face.b],
-                                model.objects[0].object.CPV_array[face.c]
-                            ];
-                        }
-
-                        if (model.objects[0].object.UV2_array.length > 0){
-
-                            self._uv2ForFaces.push(
-                                    model.objects[0].object.UV2_array[face.a][0],
-                                    model.objects[0].object.UV2_array[face.a][1],
-                                    model.objects[0].object.UV2_array[face.b][0],
-                                    model.objects[0].object.UV2_array[face.b][1],
-                                    model.objects[0].object.UV2_array[face.c][0],
-                                    model.objects[0].object.UV2_array[face.c][1]
-                            );
-                        }
-
-                        uvForFaces[faceIndex] = [
-                            new THREE.Vector2(
-                                model.objects[0].object.UV1_array[face.a][0],
-                                model.objects[0].object.UV1_array[face.a][1]
-                            ),
-                            new THREE.Vector2(
-                                model.objects[0].object.UV1_array[face.b][0],
-                                model.objects[0].object.UV1_array[face.b][1]
-                            ),
-                            new THREE.Vector2(
-                                model.objects[0].object.UV1_array[face.c][0],
-                                model.objects[0].object.UV1_array[face.c][1]
-                            ),
-                        ];
-                    });
-
-                    self.geometry.faceVertexUvs = [uvForFaces];
-                    self.geometry.uvsNeedUpdate = true;
-                }
-
-            },
-
-
-            _createGeometryFaces: function(){
-                //create Face3 entries and apply the material for each face
-                var faceIndex = model.objects[0].object.faceindex;
-                for(var x = 0; x < faceIndex.length; x++){
-                    var face3 = new THREE.Face3( faceIndex[x],  faceIndex[x + 1], faceIndex[x + 2] );
-
-                    face3.materialIndex = self._materialForFace[x].MaterialID;
-                    self.geometry.faces.push(face3);
-                    x += 2;
-                }
-            },
-
-            _createGeometryVertex: function(){
-                // console.log(model.bone.boneName);
-                model.objects[0].object.vertex.forEach(function (vertex, index) {
-                    var vertexVec3 = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
-
-                    // if (model.objects[0].object.skinDataFlag === true){
-                        vertexVec3.applyMatrix4(meshBone.matrix);
-                    // }
-
-                    self.geometry.vertices.push( vertexVec3 );
-                });
-            },
-
-            _createMaterial: function () {
-                model.objects[0].materials.forEach(function (materialObj) {
-
-                    var texture = MANHUNT.level.getStorage('tex').find(materialObj.TexName);
-                    texture.wrapS =  THREE.RepeatWrapping;
-                    texture.wrapT =  THREE.RepeatWrapping;
-
-                    if ( texture === false){
-                        console.log('[MANHUNT.fileLoader.MDL] unable to locate texture',materialObj.TexName, "for model", model )
-                    }
-
-
-                    // var mat = new THREE.MeshBasicMaterial( { map: texture  } );
-                    // var mat = new THREE.MeshPhongMaterial( { color: 0xff55ff   } );
-                    var mat = new THREE.MeshStandardMaterial( { map: texture   } );
-                    // var mat = new THREE.MeshBasicMaterial( { color: 0xff55ff  } );
-
-                    if (texture.format === THREE.RGBA_S3TC_DXT5_Format){
-                        mat.transparent = true;
-                    }else{
-                        mat.transparent = false;
-                    }
-
-                    // mat.dithering = true;
-
-                    mat.skinning = true;
-                    // mat.flatShading = false;
-                    // mat.side = THREE.DoubleSide;
-                    mat.name = materialObj.TexName;
-                    mat.vertexColors = THREE.VertexColors;
-                    mat.needsUpdate = true;
-                    // mat.metallness = 0;
-                    self.material.push(
-                        mat
-                    );
-                });
-            }
 
         };
-
         self._init();
 
         return {
-            geometry: self.geometry,
-            material: self.material,
-            skeleton: self.skeleton,
-            mesh: self.mesh
+            mesh: self._mesh
         };
 
     }
@@ -912,10 +841,11 @@ MANHUNT.fileLoader.MDL = function () {
                     results = MhtMDLExtract(binary);
 
 
+                    //TODO !!!
+                    var cache = {};
 
                     callback({
                         find: function (name) {
-
                             for(var i in results){
                                 if (!results.hasOwnProperty(i)) continue;
 

@@ -1,12 +1,14 @@
-MANHUNT.entity.abstract = function ( instEntity, object ) {
+MANHUNT.entity.abstract = function ( instEntity, object, model ) {
 
-    // var object = objectOri.clone();
 
     object.name = instEntity.name;
     object.scale.set(MANHUNT.scale, MANHUNT.scale, MANHUNT.scale);
 
     var self = {
         name: instEntity.name,
+        lod: model,
+        record: MANHUNT.level.getStorage('glg').find(instEntity.glgRecord),
+        settings: instEntity,
         object: object,
 
 

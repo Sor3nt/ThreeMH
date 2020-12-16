@@ -3,9 +3,11 @@ MANHUNT.entity.construct = (function ( ) {
     var self = {
         byInstEntry: function (entry, model) {
             if (typeof model === "undefined"){
-                const geometry = new THREE.BoxGeometry( 1 / 48, 1 / 48, 1 / 48 );
-                const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-                model = new THREE.Mesh( geometry, material );
+
+                return false;
+                // const geometry = new THREE.BoxGeometry( 1 / 48, 1 / 48, 1 / 48 );
+                // const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+                // model = new THREE.Mesh( geometry, material );
             }
 
             switch (entry.entityClass) {
@@ -16,8 +18,8 @@ MANHUNT.entity.construct = (function ( ) {
                     return new MANHUNT.entity.Player(entry, model);
                 case 'Hunter_Inst':
                     return new MANHUNT.entity.Hunter(entry, model);
-                case 'Light_Inst':
-                    return new MANHUNT.entity.Light(entry, model);
+                // case 'Light_Inst':
+                //     return new MANHUNT.entity.Light(entry, model);
                 default:
 
 

@@ -22,15 +22,7 @@ MANHUNT.level = (function () {
             chain5: false
         },
 
-        load: function (name, callback) {
-            console.log("[MANHUNT.level] Load level ", name);
-
-            self._name = name;
-            self._callback = callback;
-
-            /**
-             * Start loading chain
-             */
+        _init: function(){
             self._storage.ifp = new MANHUNT.storage.Animation();
             self._storage.tex = new MANHUNT.storage.Storage('tex');
             self._storage.mdl = new MANHUNT.storage.Model();
@@ -38,6 +30,13 @@ MANHUNT.level = (function () {
             self._storage.glg = new MANHUNT.storage.Storage('glg');
             self._storage.inst = new MANHUNT.storage.Storage('inst');
             self._storage.entity = new MANHUNT.storage.Storage();
+        },
+
+        load: function (name, callback) {
+            console.log("[MANHUNT.level] Load level ", name);
+
+            self._name = name;
+            self._callback = callback;
 
             /**
              * Chain 1: Player Texture => Player Model
@@ -135,12 +134,15 @@ MANHUNT.level = (function () {
                     var glg = self._storage.glg.find(instEntry.glgRecord);
                     if (glg === false) return;
 
-                    var model;
+                    var model,entity;
                     var modelName = glg.getValue("MODEL");
                     if (modelName === false){
 
 
-                        var entity = MANHUNT.entity.construct.byInstEntry(instEntry);
+                        entity = MANHUNT.entity.construct.byInstEntry(instEntry);
+                        if (entity === false) return;
+
+                        MANHUNT.engine.getScene().add(entity.object);
 
                     }else {
                         if (modelName === "skybox_asylum") {
@@ -154,15 +156,24 @@ MANHUNT.level = (function () {
                         }
                         if (model === false) return;
 
-                        var entity = MANHUNT.entity.construct.byInstEntry(instEntry, model);
+                        entity = MANHUNT.entity.construct.byInstEntry(instEntry, model);
+                        if (entity === false) return;
+// console.log(entity);
+                        entity.lod.get().children.forEach(function (lod, index) {
+                            index > 0 && lod.position.copy(entity.object.position);
+                            index > 0 && lod.rotation.copy(entity.object.rotation);
 
+                            MANHUNT.engine.getScene().add(lod);
+                        });
                     }
 
-                    if (entity === false) return;
+
 
                     self._storage.entity.add(entity);
 // console.log(entity.object, model);
-                    MANHUNT.engine.getScene().add(entity.object);
+
+
+
 
                 });
             }
@@ -186,7 +197,7 @@ MANHUNT.level = (function () {
                 //allow to click on a entity model
                 MANHUNT.entityInteractive.init();
 
-                MANHUNT.sidebar.menu.init();
+                typeof MANHUNT.sidebar.menu !== "undefined" && MANHUNT.sidebar.menu.init();
 
                 var section = MANHUNT.sidebar.menu.getSection('entity');
                 section.getView('entity-selection').setEntities(self._storage.entity.getData());
@@ -202,6 +213,8 @@ MANHUNT.level = (function () {
         }
 
     };
+
+    self._init();
 
     return {
         getConfig: function(){

@@ -51,8 +51,6 @@ MANHUNT.engine = (function () {
             self.scene = scene;
             self.scene2 = scene2;
 
-            scene.add( new THREE.GridHelper( 1000, 10, 0x888888, 0x444444 ) );
-
             return scene;
         },
 

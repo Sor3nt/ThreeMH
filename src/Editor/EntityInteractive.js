@@ -27,7 +27,7 @@ MANHUNT.entityInteractive = (function () {
                 if (self._selected === null) return;
 
                 var section = MANHUNT.sidebar.menu.getSection('entity');
-                section.getView('xyz').update();
+                section && section.getView('xyz').update();
             } );
 
             MANHUNT.engine.getScene().add( self.transformControl );
@@ -74,8 +74,7 @@ console.log(intersects[0].object);
 
             //Update sidebar menu
             var entitySection = MANHUNT.sidebar.menu.getSection('entity');
-            entitySection.getView('xyz').setObject(object);
-
+            entitySection && entitySection.getView('xyz').setObject(object);
 
             MANHUNT.camera.setPosition(object.position);
 

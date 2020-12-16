@@ -174,134 +174,53 @@
     <script src="src/Engine.js"></script>
     <script src="src/Level.js"></script>
 
-<!--    <script type="module" src="src/Library/TransformControls.js"></script>-->
+    <!--    <script type="module" src="src/Library/TransformControls.js"></script>-->
 
     <script src="src/Editor/EntityInteractive.js"></script>
 </head>
 <body>
-<!--    <script id="fragment_shader" type="x-shader/x-fragment">-->
-
-<!--    uniform vec3 color;-->
-<!--    uniform sampler2D texture;-->
-
-<!--    varying vec2 vUv;-->
-
-<!--    void main() {-->
-
-<!--        vec4 tColor = texture2D( texture, vUv );-->
-
-<!--        gl_FragColor = vec4( mix( color, tColor.rgb, tColor.a ), 1.0 );-->
-
-<!--    }-->
-
-<!--    </script>-->
-
-    <div id="menu">
-        <div id="selection"></div>
-        <hr/>
-        <div id="sections"></div>
-
-    </div>
 
 
     <div id="container"></div>
 
     <script type="module">
-
-
-        async function MLSTest(){
-            //
-            // MlsChain([
-            //     [
-            //         new Token('function'),
-            //         'SetCurrentLOD',
-            //             [ 'GetEntity',
-            //                 ['Asylum_cell_flicker'],
-            //                 0
-            //             ]
-            //     ]
-            // ]);
-            // MANHUNT.levelScript.functions
-            console.log("HI");
-            var i = 0;
-            while(i < 1000){
-            //     MANHUNT.levelScript.functions.switchLightOn(
-            //         MANHUNT.levelScript.functions.getEntity('CJ_LIGHT_on_(L)31')
-            //     );
-            //     await MANHUNT.levelScript.functions.sleep(
-            //         MANHUNT.levelScript.functions.randNum(1500)
-            //     );
-            //     MANHUNT.levelScript.functions.switchLightOff(
-            //         MANHUNT.levelScript.functions.getEntity('CJ_LIGHT_on_(L)31')
-            //     );
-            //     await MANHUNT.levelScript.functions.sleep(
-            //         MANHUNT.levelScript.functions.randNum(800)
-            //
-            //     );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    1
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    2
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    0
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
-
-                i++;
-
-            }
-
-        }
-
         MANHUNT.engine.init();
 
-        MANHUNT.level.load( "A01_Escape_Asylum", function() {
+        var texStorage = MANHUNT.level.getStorage('tex');
+        var mdlStorage = MANHUNT.level.getStorage('mdl');
 
+        var levelName = "A01_Escape_Asylum";
+        var showModel = "EST_Garage_Button_(S)";
+        var showModel = "danny_asylum_bloody";
 
-            var spotLight = new THREE.SpotLight(0xffffff);
-            spotLight.position.set( 1, 1, 1 );
-            MANHUNT.engine.getScene().add(spotLight);
+        var model = './data/global/danny_asylum_bloody_pc.mdl';
+        var texture = './data/global/danny_asylum_bloody_pc.tex';
+        // var model = './data/levels/' + levelName + '/modelspc.mdl';
+        // var texture = './data/levels/' + levelName + '/modelspc.tex';
 
+        texStorage.load(texture, function () {
+            mdlStorage.load(model, function () {
+                var scene = MANHUNT.engine.getScene();
 
-            var player = MANHUNT.level.getStorage('entity').find('player(player)');
-            //
-            var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-            MANHUNT.engine.getScene().add( hemiLight );
+                scene.add( new THREE.HemisphereLight( 0xffffff, 0x444444 ) );
+                scene.add( new THREE.GridHelper( 1000, 10, 0x888888, 0x444444 ) );
 
+                var model = mdlStorage.find(showModel);
+                model.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
+                scene.add(model);
+                console.log(model);
+                // var model = mdlStorage.find(showModel).get(1);
+                // model.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
+                // scene.add(model);
 
+                MANHUNT.entityInteractive.init();
+                MANHUNT.entityInteractive.lookAtObject(model);
 
-            MANHUNT.camera.setLookAt(player.object);
+                MANHUNT.engine.render();
 
-            // var clip = MANHUNT.level.getStorage('ifp').find('PlayerAnims', 'ASY_INMATE_IDLE_1');
-// console.log("CLIP", clip);
-            // MANHUNT.camera.setLookAt(MANHUNT.level.getStorage('entity').find('player(player)').object);
-
-            // MLSTest();
-
-
-            MANHUNT.engine.render();
+            });
 
         });
-
     </script>
 </body>
 </html>

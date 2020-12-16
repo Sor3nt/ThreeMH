@@ -2,13 +2,12 @@ MANHUNT.entity.Light = function ( entity, model ) {
     if (entity.name !== "CJ_LIGHT_on_(L)31") return;
 
     var glg = MANHUNT.level.getStorage('glg').find(entity.glgRecord);
-    var lod = glg.getValue('LOD_DATA').split(',');
+    var lod = glg.getValue('LOD_DATA');
 
     var targetPos = new THREE.Vector3(
-        parseFloat(lod[0]),
-        parseFloat(lod[1]),
-        parseFloat(lod[2]),
-        // parseFloat(lod[3]),
+        lod.x,
+        lod.y,
+        lod.z
     );
 
     var container = new THREE.Object3D();
@@ -82,7 +81,7 @@ console.log("LIGHT en", light, entity);
     // window.spotLightHelper = new THREE.SpotLightHelper( light );
     // MANHUNT.engine.getScene().add( spotLightHelper );
 
-    var base = new MANHUNT.entity.abstract(entity, light);
+    var base = new MANHUNT.entity.abstract(entity, light, light);
 
 
     // console.log(target.position, light.position);
