@@ -1,5 +1,4 @@
 MANHUNT.entity.Light = function ( entity, model ) {
-    if (entity.name !== "CJ_LIGHT_on_(L)31") return;
 
     var glg = MANHUNT.level.getStorage('glg').find(entity.glgRecord);
     var lod = glg.getValue('LOD_DATA');

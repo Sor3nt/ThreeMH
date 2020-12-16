@@ -209,67 +209,24 @@
     <script type="module">
 
 
-        async function MLSTest(){
-            //
-            // MlsChain([
-            //     [
-            //         new Token('function'),
-            //         'SetCurrentLOD',
-            //             [ 'GetEntity',
-            //                 ['Asylum_cell_flicker'],
-            //                 0
-            //             ]
-            //     ]
-            // ]);
-            // MANHUNT.levelScript.functions
-            console.log("HI");
+        async function mlsA01CellFlicker(){
+
             var i = 0;
+            var f = MANHUNT.levelScript.functions;
             while(i < 1000){
-            //     MANHUNT.levelScript.functions.switchLightOn(
-            //         MANHUNT.levelScript.functions.getEntity('CJ_LIGHT_on_(L)31')
-            //     );
-            //     await MANHUNT.levelScript.functions.sleep(
-            //         MANHUNT.levelScript.functions.randNum(1500)
-            //     );
-            //     MANHUNT.levelScript.functions.switchLightOff(
-            //         MANHUNT.levelScript.functions.getEntity('CJ_LIGHT_on_(L)31')
-            //     );
-            //     await MANHUNT.levelScript.functions.sleep(
-            //         MANHUNT.levelScript.functions.randNum(800)
-            //
-            //     );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    1
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    2
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
-
-                MANHUNT.levelScript.functions.setCurrentLOD(
-                    MANHUNT.levelScript.functions.getEntity('buttonElevatorLower_(S)'),
-                    0
-                );
-
-                await MANHUNT.levelScript.functions.sleep(
-                    300
-                );
+                f.setCurrentLOD(f.getEntity('Asylum_cell_flicker'),0);
+                f.setCurrentLOD(f.getEntity('Asylum_bars_flicker'), 0);
+                f.switchLightOn (f.getEntity('CJ_LIGHT_on_(L)39'));
+                f.setCurrentLOD(f.getEntity('dead_staff'),0);
+                await f.sleep (f.randNum(1500));
+                f.setCurrentLOD(f.getEntity('Asylum_cell_flicker'),1);
+                f.setCurrentLOD(f.getEntity('Asylum_bars_flicker'), 1);
+                f.switchLightOff (f.getEntity('CJ_LIGHT_on_(L)39'));
+                f.setCurrentLOD(f.getEntity('dead_staff'),1);
+                await f.sleep(f.randNum(800));
 
                 i++;
-
             }
-
         }
 
         MANHUNT.engine.init();
@@ -281,21 +238,18 @@
             spotLight.position.set( 1, 1, 1 );
             MANHUNT.engine.getScene().add(spotLight);
 
-
-            var player = MANHUNT.level.getStorage('entity').find('player(player)');
-            //
             var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
             MANHUNT.engine.getScene().add( hemiLight );
 
 
-
+            var player = MANHUNT.level.getStorage('entity').find('player(player)');
             MANHUNT.camera.setLookAt(player.object);
 
             // var clip = MANHUNT.level.getStorage('ifp').find('PlayerAnims', 'ASY_INMATE_IDLE_1');
 // console.log("CLIP", clip);
             // MANHUNT.camera.setLookAt(MANHUNT.level.getStorage('entity').find('player(player)').object);
 
-            // MLSTest();
+            mlsA01CellFlicker();
 
 
             MANHUNT.engine.render();

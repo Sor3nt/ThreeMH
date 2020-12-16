@@ -62,7 +62,7 @@ MANHUNT.fileLoader.GLG = function () {
 
                     var found = false;
                     options.forEach(function (option) {
-                        if (option.attr === attr) found = option.value;
+                        if (option.attr === attr) found = typeof option.value === "undefined" ? true : option.value;
                     });
 
                     return found;

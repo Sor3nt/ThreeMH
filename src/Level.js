@@ -158,8 +158,8 @@ MANHUNT.level = (function () {
 
                         entity = MANHUNT.entity.construct.byInstEntry(instEntry, model);
                         if (entity === false) return;
-// console.log(entity);
-                        entity.lod.get().children.forEach(function (lod, index) {
+console.log(entity);
+                        typeof entity.lod.get !== "undefined" && entity.lod.get().children.forEach(function (lod, index) {
                             index > 0 && lod.position.copy(entity.object.position);
                             index > 0 && lod.rotation.copy(entity.object.rotation);
 

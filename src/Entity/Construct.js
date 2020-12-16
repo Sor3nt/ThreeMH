@@ -18,8 +18,10 @@ MANHUNT.entity.construct = (function ( ) {
                     return new MANHUNT.entity.Player(entry, model);
                 case 'Hunter_Inst':
                     return new MANHUNT.entity.Hunter(entry, model);
-                // case 'Light_Inst':
-                //     return new MANHUNT.entity.Light(entry, model);
+                case 'Light_Inst':
+                    if (entry.name !== "CJ_LIGHT_on_(L)39") return false;
+
+                    return new MANHUNT.entity.Light(entry, model);
                 default:
 
 
