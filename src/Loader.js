@@ -2,15 +2,14 @@
 MANHUNT.loader = (function () {
     var self = {
 
-        _loaders : {
-            glg: new MANHUNT.fileLoader.GLG(),
-            ifp: new MANHUNT.fileLoader.IFP(),
-            mdl: new MANHUNT.fileLoader.MDL(),
-            bsp: new MANHUNT.fileLoader.BSP(),
-            tex: new MANHUNT.fileLoader.TEX(),
-            mls: new MANHUNT.fileLoader.MLS(),
-            tvp: new MANHUNT.fileLoader.TVP(),
-            inst: new MANHUNT.fileLoader.INST()
+        _loaders : {},
+
+        _init: function(){
+            ['GLG', 'IFP', 'MDL', 'BSP', 'TEX', 'MLS', 'TVP', 'INST', 'IFP'].forEach(function (loader) {
+                if (typeof MANHUNT.fileLoader[loader] === "undefined") return;
+                self._loaders[loader.toLowerCase()] = new MANHUNT.fileLoader[loader]();
+
+            })
         },
 
         get: function(loader){
@@ -27,6 +26,8 @@ MANHUNT.loader = (function () {
         }
 
     };
+
+    self._init();
 
     return {
         get: self.get,

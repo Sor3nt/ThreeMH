@@ -190,17 +190,17 @@ MANHUNT.fileLoader.IFP = function () {
                     if (frameType === 3 && i === 0) {
                         curtime = 0.0;
                     } else {
-                        curtime = binary.consume(2, 'int16') / 2048.0 * 30.0;
+                        curtime = binary.consume(2, 'uint16') / 2048.0 * 30.0;
                     }
 
                     frameTime += curtime;
                 } else {
                     if (startTime < 1) startTime = 1;
 
-                    if ((frames === 1) && (startTime === (times*30))){
-                        frameTime = (i-1) + startTime;
+                    if ((frames === 0) && (startTime === (times*30))){
+                        frameTime = (i) + startTime;
                     }else{
-                        frameTime = (i-1) + startTime - 1
+                        frameTime = (i) + startTime - 1
                     }
                 }
 

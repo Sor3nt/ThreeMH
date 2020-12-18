@@ -1,17 +1,6 @@
 MANHUNT.entity.abstract = function ( instEntity, object, model ) {
 
     var glgRecord = MANHUNT.level.getStorage('glg').find(instEntity.glgRecord);
-    object.name = instEntity.name;
-    object.scale.set(MANHUNT.scale, MANHUNT.scale, MANHUNT.scale);
-
-    if (glgRecord.getValue("TRANSPARENT") === true){
-        object.material.forEach(function (mat) {
-            mat.transparent = true;
-            mat.opacity = 0.1;
-            mat.needsUpdate = true;
-        });
-    }
-
 
     var self = {
         name: instEntity.name,
@@ -49,6 +38,25 @@ MANHUNT.entity.abstract = function ( instEntity, object, model ) {
         }
 
     };
+
+
+    object.name = instEntity.name;
+    object.scale.set(MANHUNT.scale, MANHUNT.scale, MANHUNT.scale);
+
+    var animBlock = glgRecord.getValue("ANIMATION_BLOCK");
+    self.hasAnimation = animBlock !== false;
+    if (animBlock !== false){
+        // self.animatioBlock = "PlayerAnims";
+        self.animatioBlock = animBlock;
+    }
+
+    if (glgRecord.getValue("TRANSPARENT") === true){
+        // object.material.forEach(function (mat) {
+        //     mat.transparent = true;
+        //     mat.opacity = 0.1;
+        //     mat.needsUpdate = true;
+        // });
+    }
 
     self.setPosition(instEntity.position);
     self.setRotation(instEntity.rotation);

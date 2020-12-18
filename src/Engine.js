@@ -63,7 +63,7 @@ MANHUNT.engine = (function () {
             // window.spotLightHelper.update();
             MANHUNT.camera.update();
             MANHUNT.control.update(delta);
-            // MANHUNT.animator.update(delta);
+            MANHUNT.animator.update(delta);
             // MANHUNT.entityInteractive.update();
 
             // self.renderer.render(self.scene2, MANHUNT.camera.getCamera());

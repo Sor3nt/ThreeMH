@@ -1,22 +1,42 @@
 MANHUNT.animator = (function () {
 
+    //TODO: https://github.com/mrdoob/three.js/blob/master/examples/webgl_animation_skinning_additive_blending.html
+
     var self = {
 
         _mixer: {},
+        _action: {},
+        _clip: {},
 
-        play: function( object, animationName){
-            console.log(object);
+        play: function( entity, animationName){
 
-            if (typeof self._mixer[object.uuid] === "undefined")
-                self._mixer[object.uuid] = new THREE.AnimationMixer(object);
+            if (entity.hasAnimation === false){
+                console.error('[MANHUNT.animator] try to play animation', animationName, 'on an entity which has no animation setting', entity);
+                return;
+            }
 
-            MANHUNT.animation.getAnimationClip(animationName, function (anim) {
+            if (typeof entity.animatioBlock !== "string"){
+                console.error('[MANHUNT.animator] given animationBlock is not valid for entity', entity);
+                return;
+            }
+            var obj = entity.lod.getLOD(0);
+            var animIndex = obj.uuid + '_' + animationName;
 
-                console.log("FROM LOADER", anim[ 0 ]);
-                var action = self._mixer[object.uuid].clipAction( anim[ 0 ] );
-                action.play();
-            });
+            // if (typeof self._clip[animIndex] === "undefined"){
+                //load animation clip
+                self._clip[animIndex] = MANHUNT.level.getStorage('ifp').find(entity.animatioBlock, animationName);
+            // }
 
+            if (typeof self._mixer[obj.uuid] === "undefined")
+                self._mixer[obj.uuid] = new THREE.AnimationMixer(obj);
+            else console.error("das kann nicht sein 1");
+
+
+            if (typeof self._action[animIndex] === "undefined"){
+                self._action[animIndex] = self._mixer[obj.uuid].clipAction( self._clip[animIndex] );
+            }
+
+            self._action[animIndex].play();
         },
 
         addMixer: function(uuid, mixer){
@@ -26,10 +46,12 @@ MANHUNT.animator = (function () {
         update: function (delta) {
 
             for(var i in self._mixer){
-                // if (!self._mixer.hasOwnProperty(i)) continue;
-                // console.log("update mixer", self._mixer[i]);
+                if (!self._mixer.hasOwnProperty(i)) continue;
+               // console.log("update mixer", self._mixer[i]);
                 self._mixer[i].update( delta );
             }
+
+            //consle.log(asd);
 
         }
 

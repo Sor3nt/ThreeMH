@@ -756,6 +756,8 @@ MANHUNT.fileLoader.MDL = function () {
                     if (entryIndex === 0) {
                         mesh.add(self._allBones[0]);
                         mesh.bind(skeleton);
+                        const helper = new THREE.SkeletonHelper( mesh );
+                        MANHUNT.engine.getScene().add( helper );
                     }
                     entryIndex++;
                 });
