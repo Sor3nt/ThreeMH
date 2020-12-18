@@ -608,15 +608,16 @@ MANHUNT.fileLoader.MDL = function () {
             _rootBone : {},
             _meshBone : {},
             _allBones : [],
-            _mesh: new THREE.Mesh(),
+            _mesh: new THREE.Group(),
 
             _init: function(){
                 var bones = self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
                 // console.log(skeleton);
 
                 var entryIndex = 0;
+                var skeleton = new THREE.Skeleton( self._allBones );
+
                 model.objects.forEach(function (entry) {
-                    var skeleton = new THREE.Skeleton( self._allBones );
                     // self._allBones = [];
                     // self._meshBone = [];
 
@@ -699,11 +700,12 @@ MANHUNT.fileLoader.MDL = function () {
                         ];
 
                         if (entry.object.skinDataFlag === true) {
-                            face.vertexColors = [
-                                entry.object.CPV_array[face.a],
-                                entry.object.CPV_array[face.b],
-                                entry.object.CPV_array[face.c]
-                            ];
+                            //TODO: HACK, the models are very very dark, dont know..
+                            // face.vertexColors = [
+                            //     entry.object.CPV_array[face.a],
+                            //     entry.object.CPV_array[face.b],
+                            //     entry.object.CPV_array[face.c]
+                            // ];
                         }
 
                         if(entry.object.UV1_array.length > 0){
@@ -751,13 +753,14 @@ MANHUNT.fileLoader.MDL = function () {
                     //     // mesh.position.y = 0;
                     //     // mesh.position.z = entry.object.Position[2] * 48;
                     // }
-                    self._mesh.children.push(mesh);
+                    self._mesh.add(mesh);
+                    // self._mesh.children.push(mesh);
 
                     if (entryIndex === 0) {
                         mesh.add(self._allBones[0]);
                         mesh.bind(skeleton);
-                        const helper = new THREE.SkeletonHelper( mesh );
-                        MANHUNT.engine.getScene().add( helper );
+                        // const helper = new THREE.SkeletonHelper( mesh );
+                        // MANHUNT.engine.getScene().add( helper );
                     }
                     entryIndex++;
                 });

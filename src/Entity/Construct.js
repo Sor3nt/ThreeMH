@@ -15,11 +15,21 @@ MANHUNT.entity.construct = (function ( ) {
                 // case 'Trigger_Inst':
                 //     return new MANHUNT.entity.Trigger(entry, callback);
                 case 'Player_Inst':
+                    // var modelObj = model.get();
+
+                    // modelObj.children.forEach(function (child, index) {
+                    //     if (index === 0) return;
+                        // child.visible = true;
+                    // });
+
+
                     return new MANHUNT.entity.Player(entry, model);
                 case 'Hunter_Inst':
                     return new MANHUNT.entity.Hunter(entry, model);
+                case 'Leader_Inst':
+                    return false;
                 case 'Light_Inst':
-                    if (entry.name !== "CJ_LIGHT_on_(L)39") return false;
+                    if (entry.name !== "CJ_LIGHT_on_(L)31") return false;
 
                     return new MANHUNT.entity.Light(entry, model);
                 default:

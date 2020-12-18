@@ -159,25 +159,25 @@ MANHUNT.level = (function () {
                         entity = MANHUNT.entity.construct.byInstEntry(instEntry, model);
                         if (entity === false) return;
 
-                        if (entity.hasAnimation === true){
+                        MANHUNT.engine.getScene().add(entity.object);
+                        //
+                        // if (typeof entity.lod.get === "undefined"){
+                        //     console.log("add, ", entity.object);
+                        //     MANHUNT.engine.getScene().add(entity.object);
+                        //
+                        // }else{
+                        //     entity.lod.get().children.forEach(function (lod, index) {
+                        //         index > 0 && lod.position.copy(entity.object.position);
+                        //         index > 0 && lod.rotation.copy(entity.object.rotation);
+                        //
+                        //         MANHUNT.engine.getScene().add(lod);
+                        //     });
+                        // }
 
-                            // if (entity.animatioBlock === "PlayerAnims"){
-                            entity.animatioBlock = "PlayerAnims";
-
-                                MANHUNT.animator.play(entity, 'BAT_STAND_SNEAK_ANIM');
-                            // }
-                        }
-
-                        typeof entity.lod.get !== "undefined" && entity.lod.get().children.forEach(function (lod, index) {
-                            index > 0 && lod.position.copy(entity.object.position);
-                            index > 0 && lod.rotation.copy(entity.object.rotation);
-
-                            MANHUNT.engine.getScene().add(lod);
-                        });
                     }
 
 
-
+// console.log("ADD ENT", entity.name);
                     self._storage.entity.add(entity);
 // console.log(entity.object, model);
 
