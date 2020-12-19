@@ -175,9 +175,9 @@ MANHUNT.fileLoader.IFP = function () {
             }
 
             var resultFrames = { frames: [] };
-
+            var resultFrame;
             for (var i = 0; i < frames; i++) {
-                var resultFrame = {
+                resultFrame = {
                     time: 0,
                     quat: [],
                     position: [],
@@ -227,6 +227,13 @@ MANHUNT.fileLoader.IFP = function () {
                 }
 
                 resultFrames.frames.push(resultFrame);
+            }
+
+            //fix for three.js, we need the last frame
+            if (frameTime < times * 30){
+                resultFrames.frames[resultFrames.frames.length - 1].time = times * 30;
+
+                console.log("not at the end", frameTime, times * 30, resultFrame);
             }
 
             if (ANPKType === "SEQT") {
@@ -327,7 +334,6 @@ MANHUNT.fileLoader.IFP = function () {
                 type: "quaternion"
             };
 
-            var lastFrame = false;
             bone.frames[0].frames.forEach(function (frame) {
 
                 if (frame.quat.length > 0){
@@ -340,18 +346,19 @@ MANHUNT.fileLoader.IFP = function () {
                     );
 
                 }
-
-                lastFrame = new THREE.Vector4(
-                    frame.quat[0],
-                    frame.quat[1],
-                    frame.quat[2],
-                    frame.quat[3]
-                );
+                if (frame.position.length > 0){
+                    trackPosition.times.push(frame.time / 30);
+                    trackPosition.values.push(
+                        frame.position[0],
+                        frame.position[1],
+                        frame.position[2]
+                    );
+                }
             });
 
-
-            if (trackPosition.values.length > 0)
+            if (trackPosition.values.length > 0){
                 animation.tracks.push(trackPosition);
+            }
 
             if (trackQuaternion.values.length > 0)
                 animation.tracks.push(trackQuaternion);
@@ -425,7 +432,6 @@ MANHUNT.fileLoader.IFP = function () {
                                     clip = getANPKAnim(binary, IFPEntryIndexArray[groupIndex].anpkOffset[index], groupName, name);
                                 }
                             });
-
 
                             if (clip === false){
                                 console.log('[MANHUNT.loader.ifp] Unable to locate animation clip ', name);

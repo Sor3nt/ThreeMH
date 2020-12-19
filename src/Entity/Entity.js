@@ -64,7 +64,7 @@ MANHUNT.entity.abstract = function ( instEntity, object, model ) {
         };
 
         if (instEntity.entityClass === "Hunter_Inst"){
-            self.play('BAT_STAND_SNEAK_ANIM', 'PlayerAnims');
+            self.play('BAT_WACKO_IN_CELL_RUN_AND_CRY_ANIM', 'PlayerAnims');
         }
     }
 
