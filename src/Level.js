@@ -160,20 +160,6 @@ MANHUNT.level = (function () {
                         if (entity === false) return;
 
                         MANHUNT.engine.getScene().add(entity.object);
-                        //
-                        // if (typeof entity.lod.get === "undefined"){
-                        //     console.log("add, ", entity.object);
-                        //     MANHUNT.engine.getScene().add(entity.object);
-                        //
-                        // }else{
-                        //     entity.lod.get().children.forEach(function (lod, index) {
-                        //         index > 0 && lod.position.copy(entity.object.position);
-                        //         index > 0 && lod.rotation.copy(entity.object.rotation);
-                        //
-                        //         MANHUNT.engine.getScene().add(lod);
-                        //     });
-                        // }
-
                     }
 
 

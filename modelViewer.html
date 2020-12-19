@@ -190,13 +190,13 @@
         var mdlStorage = MANHUNT.level.getStorage('mdl');
 
         var levelName = "A01_Escape_Asylum";
-        var showModel = "EST_Garage_Button_(S)";
-        var showModel = "danny_asylum_bloody";
+        var showModel = "leg_hedC";
+        // var showModel = "danny_asylum_bloody";
 
-        var model = './data/global/danny_asylum_bloody_pc.mdl';
-        var texture = './data/global/danny_asylum_bloody_pc.tex';
-        // var model = './data/levels/' + levelName + '/modelspc.mdl';
-        // var texture = './data/levels/' + levelName + '/modelspc.tex';
+        // var model = './data/global/danny_asylum_bloody_pc.mdl';
+        // var texture = './data/global/danny_asylum_bloody_pc.tex';
+        var model = './data/levels/' + levelName + '/modelspc.mdl';
+        var texture = './data/levels/' + levelName + '/modelspc.tex';
 
         texStorage.load(texture, function () {
             mdlStorage.load(model, function () {
@@ -205,7 +205,7 @@
                 scene.add( new THREE.HemisphereLight( 0xffffff, 0x444444 ) );
                 scene.add( new THREE.GridHelper( 1000, 10, 0x888888, 0x444444 ) );
 
-                var model = mdlStorage.find(showModel);
+                var model = mdlStorage.find(showModel).get();
                 model.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
                 scene.add(model);
                 console.log(model);

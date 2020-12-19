@@ -122,8 +122,13 @@ MANHUNT.fileLoader.MDL = function () {
                 )
             }
 
-            data.numUV = data.VertexElementType & 0xf;
-            data.skinDataFlag = (data.VertexElementType & 0xe) === 0xe;
+
+            data.VertexElementType2 = data.VertexElementType >> 8;
+            data.skinDataFlag = (data.VertexElementType2 & 0x10) === 0x10;
+            data.numUV = data.VertexElementType2 & 0xf;
+            //
+            // data.numUV = data.VertexElementType & 0xf;
+            // data.skinDataFlag = (data.VertexElementType & 0xe) === 0xe;
             data.CPV_array = [];
             data.UV1_array = [];
             data.UV2_array = [];
@@ -281,8 +286,6 @@ MANHUNT.fileLoader.MDL = function () {
                     data.normals.push(new THREE.Vector3(vertex.normal.x, vertex.normal.y, vertex.normal.z));
                 }
             }
-
-// console.log(normal);
 
             return data;
         }
@@ -608,11 +611,19 @@ MANHUNT.fileLoader.MDL = function () {
             _rootBone : {},
             _meshBone : {},
             _allBones : [],
+            _skinDataFlag: false,
             _mesh: new THREE.Group(),
 
             _init: function(){
+
+                self._skinDataFlag = false;
+                model.objects.forEach(function (entry) {
+                    if (entry.object.skinDataFlag === true) {
+                        self._skinDataFlag = true;
+                    }
+                });
+
                 var bones = self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
-                // console.log(skeleton);
 
                 var entryIndex = 0;
                 var skeleton = new THREE.Skeleton( self._allBones );
@@ -739,24 +750,18 @@ MANHUNT.fileLoader.MDL = function () {
                     bufferGeometry.computeBoundingSphere();
 
                     var mesh;
-                    if (entryIndex === 0) {
+                    // if (entryIndex === 0) {
+                    if (entry.object.skinDataFlag === true) {
                         mesh = new THREE.SkinnedMesh(bufferGeometry, material);
+                        mesh.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
                     }else{
                         mesh = new THREE.Mesh(bufferGeometry, material);
                     }
-                    mesh.scale.set(MANHUNT.scale,MANHUNT.scale,MANHUNT.scale);
                     mesh.visible = entryIndex === 0;
-                    //
-                    // if (entryIndex > 0){
-                    //     console.log("JAAA");
-                    //     // mesh.position.x = entry.object.Position[0] * 48;
-                    //     // mesh.position.y = 0;
-                    //     // mesh.position.z = entry.object.Position[2] * 48;
-                    // }
-                    self._mesh.add(mesh);
-                    // self._mesh.children.push(mesh);
 
-                    if (entryIndex === 0) {
+                    self._mesh.add(mesh);
+
+                    if (entryIndex === 0 && entry.object.skinDataFlag === true) {
                         mesh.add(self._allBones[0]);
                         mesh.bind(skeleton);
                         // const helper = new THREE.SkeletonHelper( mesh );
@@ -808,10 +813,11 @@ MANHUNT.fileLoader.MDL = function () {
                 mat4.fromArray(data.matrix4X4_ParentChild);
 
                 var bone = new THREE.Bone();
-                // if (data.skinDataFlag === true){
-                bone.applyMatrix4(mat4);
-                //
-                // }
+
+                if (self._allBones.length !== 0){
+                    bone.applyMatrix4(mat4);
+
+                }
 
                 bone.name = data.boneName;
                 self._allBones.push(bone);
