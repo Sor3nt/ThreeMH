@@ -738,7 +738,7 @@ MANHUNT.fileLoader.MDL = function () {
                     mesh.visible = entryIndex === 0;
                     self._mesh.add(mesh);
 
-                    if (entryIndex === 0 && self._allBones.length > 1) {
+                    if (entryIndex === 0 && entry.object.skinDataFlag === true) {
                         mesh.add(self._allBones[0]);
                         mesh.bind(skeleton);
                     }
