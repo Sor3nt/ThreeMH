@@ -18,10 +18,16 @@ MANHUNT.sidebar.menu = (function () {
 
             self._createSections();
 
-            self.showSection('entity');
+            self.showSection('world');
         },
 
         _createSections: function(){
+            self._section.world = new MANHUNT.sidebar.Section({
+                name: 'World',
+                icon: '🌎'
+            });
+            self._section.world.addView('scene-selection');
+
             self._section.entity = new MANHUNT.sidebar.Section({
                 name: 'Entity',
                 icon: 'ENTT'

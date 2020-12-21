@@ -65,8 +65,10 @@ MANHUNT.level = (function () {
             self._storage.tex.load('./data/levels/' + name + '/scene1_pc.tex', function () {
                 self._storage.bsp.load('./data/levels/' + name + '/scene1_pc.bsp', function () {
                     self._storage.bsp.load('./data/levels/' + name + '/scene2_pc.bsp', function () {
-                        self._status.chain3 = true;
-                        self._checkChainStates();
+                        self._storage.bsp.load('./data/levels/' + name + '/scene3_pc.bsp', function () {
+                            self._status.chain3 = true;
+                            self._checkChainStates();
+                        });
                     });
                 });
             });
@@ -98,8 +100,9 @@ MANHUNT.level = (function () {
                 self._processed.chain3 = true;
 
                 var scenes = [
-                    self._storage.bsp.find('scene1'),
-                    self._storage.bsp.find('scene2')
+                    // self._storage.bsp.find('scene1'),
+                    // self._storage.bsp.find('scene2'),
+                    self._storage.bsp.find('scene3'),
                 ];
 
                 scenes.forEach(function (scene, index) {
@@ -108,11 +111,12 @@ MANHUNT.level = (function () {
                         // scene.renderOrder = 1;
                         // scene.material.depthWrite = false;
                     }
-
+console.log("scene3", scene);
                     // scene.order
                     scene.scale.set(48,48,48);
                     // scene.renderOrder = 0;
                     // if (index === 1) MANHUNT.engine.getScene2().add(scene);
+
                     MANHUNT.engine.getScene().add(scene);
                 });
 

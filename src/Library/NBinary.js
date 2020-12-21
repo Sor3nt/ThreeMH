@@ -87,6 +87,75 @@ function NBinary( data){
             };
         },
 
+        readVector2: function (byte, type) {
+            byte = byte || 4;
+            type = type || 'float32';
+
+            return new THREE.Vector2(
+                self.consume(byte, type),
+                self.consume(byte, type)
+            );
+        },
+
+        readVector3: function (byte, type, pad, pByte, pType) {
+            byte = byte || 4;
+            type = type || 'float32';
+            pad = pad || false;
+
+            var vec3 = new THREE.Vector3(
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type)
+            );
+
+            if (pad === true){
+                pByte = pByte || byte;
+                pType = pType || type;
+                self.consume(pByte, pType);
+            }
+
+            return vec3;
+        },
+
+        readFace3: function (byte, type) {
+            byte = byte || 2;
+            type = type || 'int16';
+
+            return new THREE.Face3(
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type)
+            );
+        },
+
+        readFaces3: function (count, materialForFace, byte, type) {
+            byte = byte || 2;
+            type = type || 'int16';
+
+            var faces = [];
+            for (i = 0; i < count; i++) {
+
+                var face3 = self.readFace3(byte, type);
+                face3.materialIndex = materialForFace[i];
+                faces.push(face3);
+            }
+
+            return faces;
+        },
+
+        readVector4: function (byte, type) {
+            byte = byte || 4;
+            type = type || 'float32';
+
+            return new THREE.Vector4(
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type)
+            );
+        },
+
+
         readXYZW: function () {
             return {
                 x: self.consume(4, 'float32'),
@@ -94,6 +163,38 @@ function NBinary( data){
                 z: self.consume(4, 'float32'),
                 w: self.consume(4, 'float32')
             };
+        },
+
+        readColorRGBA: function (byte, type) {
+            byte = byte || 1;
+            type = type || 'uint8';
+
+            var rgba = [
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type),
+                self.consume(byte, type)
+            ];
+
+            return new THREE.Color(
+                rgba[0], rgba[1], rgba[2]
+            );
+        },
+
+        readColorBGRADiv255: function (byte, type) {
+            byte = byte || 1;
+            type = type || 'uint8';
+
+            var bgra = [
+                self.consume(byte, type) / 255.0,
+                self.consume(byte, type) / 255.0,
+                self.consume(byte, type) / 255.0,
+                self.consume(byte, type)
+            ];
+
+            return new THREE.Color(
+                bgra[2], bgra[1], bgra[0]
+            );
         }
 
     };
@@ -105,6 +206,13 @@ function NBinary( data){
         current : function(){
             return current;
         },
+        readColorRGBA: self.readColorRGBA,
+        readColorBGRADiv255: self.readColorBGRADiv255,
+        readFace3: self.readFace3,
+        readFaces3: self.readFaces3,
+        readVector2: self.readVector2,
+        readVector3: self.readVector3,
+        readVector4: self.readVector4,
         remain: self.remain,
         readXYZ: self.readXYZ,
         readXYZW: self.readXYZW,
