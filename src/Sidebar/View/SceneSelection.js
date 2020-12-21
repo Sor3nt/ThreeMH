@@ -14,25 +14,38 @@ MANHUNT.sidebar.view.SceneSelection = function () {
             container.className = "view scene-selection";
             self._elements.container = container;
 
-
             self._elements.scene = MANHUNT.sidebar.elements.InputGroup({
-                scene1: true,
-                scene2: true,
-                scene3: false
-            }, 'checkbox');
-
-            self._elements.scene.setOnChangeCallback('scene1', self.onSceneSelectionChanged);
-            self._elements.scene.setOnChangeCallback('scene2', self.onSceneSelectionChanged);
-            self._elements.scene.setOnChangeCallback('scene3', self.onSceneSelectionChanged);
+                world: true,
+                transparent: true,
+                shadow: false,
+                bbox: false
+            }, 'checkbox', self.onSelectionChanged);
 
             container.appendChild(self._elements.scene.container);
         },
 
-        onSceneSelectionChanged: function(event){
-            var sceneName = event.target.name;
+        onSelectionChanged: function(event){
+            var fieldName = event.target.name;
             var enable = event.target.checked;
 
-            MANHUNT.level.getStorage('bsp').find(sceneName).visible = enable;
+            switch(fieldName){
+                case 'world':
+                    MANHUNT.level.getStorage('bsp').find('scene1').visible = event.target.checked;
+                    break;
+                case 'transparent':
+                    MANHUNT.level.getStorage('bsp').find('scene2').visible = event.target.checked;
+                    break;
+                case 'shadow':
+                    MANHUNT.level.getStorage('bsp').find('scene3').children.forEach(function (child) {
+                        if (child.name === "preligh") child.visible = enable;
+                    });
+                    break;
+                case 'bbox':
+                    MANHUNT.level.getStorage('bsp').find('scene3').children.forEach(function (child) {
+                        if (child.name === "bbox") child.visible = enable;
+                    });
+                    break;
+            }
         }
 
     });

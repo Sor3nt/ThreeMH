@@ -1,11 +1,7 @@
-
-
-
-
-
+/**
+ * MDL Reader based on the awesome work from Majest1c_R3 and Allen
+ */
 MANHUNT.fileLoader.MDL = function () {
-
-    var rootBone, meshBone;
 
     function MhtMDLExtract(inputData){
 
@@ -57,11 +53,9 @@ MANHUNT.fileLoader.MDL = function () {
 
                 binary.setCurrent(material.TexNameOffset);
                 material.TexName = binary.getString(0, true);
-
                 materials.push(material);
 
                 binary.setCurrent(nextMaterialOffset);
-
             }
 
             return materials;
@@ -122,13 +116,10 @@ MANHUNT.fileLoader.MDL = function () {
                 )
             }
 
-
             data.VertexElementType2 = data.VertexElementType >> 8;
             data.skinDataFlag = (data.VertexElementType2 & 0x10) === 0x10;
             data.numUV = data.VertexElementType2 & 0xf;
-            //
-            // data.numUV = data.VertexElementType & 0xf;
-            // data.skinDataFlag = (data.VertexElementType & 0xe) === 0xe;
+
             data.CPV_array = [];
             data.UV1_array = [];
             data.UV2_array = [];
@@ -171,7 +162,6 @@ MANHUNT.fileLoader.MDL = function () {
                         'tv': binary.consume(4, 'float32'),
 
                         'maxWeight': 0
-
                     };
 
                     data.CPV_array.push(new THREE.Color( vertex.Color_R, vertex.Color_G, vertex.Color_B ));
@@ -255,13 +245,11 @@ MANHUNT.fileLoader.MDL = function () {
                         'weight3': binary.consume(4, 'float32'),
                         'weight2': binary.consume(4, 'float32'),
                         'weight1': binary.consume(4, 'float32'),
-                        // 'boneID4321': binary.consume(4, 'arraybuffer'),
                         'boneID4': binary.consume(1, 'uint8'),
                         'boneID3': binary.consume(1, 'uint8'),
                         'boneID2': binary.consume(1, 'uint8'),
                         'boneID1': binary.consume(1, 'uint8'),
                         'normal': parseNormal(binary),
-                        // 'Color_BGRA': binary.consume(4, 'arraybuffer'),
                         'Color_B': binary.consume(1, 'uint8') / 255.0,
                         'Color_G': binary.consume(1, 'uint8') / 255.0,
                         'Color_R': binary.consume(1, 'uint8') / 255.0,
@@ -507,7 +495,6 @@ MANHUNT.fileLoader.MDL = function () {
         function parseMdlHeader( binary ){
 
             var fourCC = binary.consume(4, 'int32');
-
             var constNumber = binary.consume(4, 'int32');
 
             return {
@@ -521,8 +508,6 @@ MANHUNT.fileLoader.MDL = function () {
                 'lastEntryIndexOffset' : binary.consume(4, 'int32'),
                 'unknown' : binary.consume(8, 'arraybuffer')
             };
-
-
         }
 
 
@@ -535,7 +520,6 @@ MANHUNT.fileLoader.MDL = function () {
             do{
 
                 var result = {};
-
                 var entryIndex = parseEntryIndex(binary);
 
                 binary.setCurrent(entryIndex.entryOffset);
@@ -623,14 +607,12 @@ MANHUNT.fileLoader.MDL = function () {
                     }
                 });
 
-                var bones = self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
+                self._generateBoneStructure(model.bone, model.objects[0].objectInfo.objectParentBoneOffset);
 
                 var entryIndex = 0;
                 var skeleton = new THREE.Skeleton( self._allBones );
 
                 model.objects.forEach(function (entry) {
-                    // self._allBones = [];
-                    // self._meshBone = [];
 
                     var i;
                     var materialForFace = [];
@@ -689,13 +671,10 @@ MANHUNT.fileLoader.MDL = function () {
                                 vertex.weight3,
                                 vertex.weight4,
                             );
-
                         }
 
                         geometry.skinIndices.push(skinIndices);
                         geometry.skinWeights.push(skinWeights);
-
-
                     });
 
                     //Generate Faces, normals and vertex colors
@@ -737,11 +716,9 @@ MANHUNT.fileLoader.MDL = function () {
                             geometry.uvsNeedUpdate = true;
                         }
 
-
                         geometry.faces.push(face);
                         x += 2;
                     }
-
 
                     var bufferGeometry = new THREE.BufferGeometry();
                     bufferGeometry.fromGeometry( geometry );
@@ -757,15 +734,13 @@ MANHUNT.fileLoader.MDL = function () {
                     }else{
                         mesh = new THREE.Mesh(bufferGeometry, material);
                     }
-                    mesh.visible = entryIndex === 0;
 
+                    mesh.visible = entryIndex === 0;
                     self._mesh.add(mesh);
 
-                    if (entryIndex === 0 && entry.object.skinDataFlag === true) {
+                    if (entryIndex === 0 && self._allBones.length > 1) {
                         mesh.add(self._allBones[0]);
                         mesh.bind(skeleton);
-                        // const helper = new THREE.SkeletonHelper( mesh );
-                        // MANHUNT.engine.getScene().add( helper );
                     }
                     entryIndex++;
                 });

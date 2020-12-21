@@ -90,8 +90,10 @@ MANHUNT.fileLoader.BSP = function () {
                     }
                 }
             }
+
             if (NumFaces !== 0) {
                 binary.setCurrent(FacesOffset);
+
                 for (i = 0; i < NumFaces; i++) {
                     var face3 = binary.readFace3(2, 'uint16');
 
@@ -111,8 +113,7 @@ MANHUNT.fileLoader.BSP = function () {
                 geometry.faces = ColFaces;
                 geometry.vertices = ColVerts;
 
-                var ColObject = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-                    // color: 0xff66ff,
+                var ColObject = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
                     vertexColors: THREE.VertexColors
                 }));
 
@@ -121,7 +122,6 @@ MANHUNT.fileLoader.BSP = function () {
                 ColObject.position.z += 1;
 
                 ColObject.name = "preligh";
-
                 SceneRootBoundBox.children.push(ColObject);
             }
 
@@ -247,7 +247,7 @@ MANHUNT.fileLoader.BSP = function () {
 
                         SectorListOffset = binary.consume(4, 'int32');
                         loadSector(binary, SectorListOffset);
-console.log(SceneRootBoundBox);
+
                         callback([SceneRootBoundBox]);
                         return;
                     }

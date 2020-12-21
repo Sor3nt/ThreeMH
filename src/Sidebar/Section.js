@@ -26,6 +26,7 @@ MANHUNT.sidebar.Section = function (settings) {
 
                 case 'xyz': view = new MANHUNT.sidebar.view.Xyz(); break;
                 case 'entity-selection': view = new MANHUNT.sidebar.view.EntitySelection(); break;
+                case 'scene-selection': view = new MANHUNT.sidebar.view.SceneSelection(); break;
                 default:
                     console.log("[MANHUNT.sidebar.menu] View is unknown", view);
                     return;

@@ -8,7 +8,7 @@ MANHUNT.camera = (function () {
 
         _init: function () {
             var aspect = window.innerWidth / window.innerHeight;
-            self._camera.perpective = new THREE.PerspectiveCamera(MANHUNT.fov, aspect, 0.1, 1000);
+            self._camera.perpective = new THREE.PerspectiveCamera(MANHUNT.fov, aspect, 0.1, 10000);
             self._camera.perpective.updateProjectionMatrix();
             // self._camera.orthographic = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
             // self._camera = new THREE.PerspectiveCamera(MANHUNT.fov, 640 / 480, 0.1, 10000);

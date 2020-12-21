@@ -28,9 +28,12 @@ MANHUNT.sidebar.menu = (function () {
             });
             self._section.world.addView('scene-selection');
 
+            //todo: hide section für entity bauen basierend auf den inst class names
+            //sprich alle hunter, alle basic....
+
             self._section.entity = new MANHUNT.sidebar.Section({
                 name: 'Entity',
-                icon: 'ENTT'
+                icon: '🔎'
             });
 
             self._section.entity.addView('entity-selection');
@@ -39,13 +42,13 @@ MANHUNT.sidebar.menu = (function () {
 
             self._section.trigger = new MANHUNT.sidebar.Section({
                 name: 'Trigger',
-                icon: '⚑'
+                icon: '🎌'
             });
 
 
             self._section.tvp = new MANHUNT.sidebar.Section({
                 name: 'Timed Vector Pair',
-                icon: '🎥'
+                icon: '📽️'
             });
 
             //Append all sections into the sidebar
