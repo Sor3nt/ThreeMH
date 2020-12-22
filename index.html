@@ -81,6 +81,7 @@
 
     <script>
         var MANHUNT = {
+            init: [],
             loader: {},
             parser: {},
             states: {},
@@ -110,7 +111,9 @@
         import { TransformControls } from './src/Library/TransformControls.js';
         import { OrbitControls } from './src/Library/OrbitControls.js';
         import { DDSLoader } from './src/Library/Loader/three.dds.loader.js';
+        import { FlyControls } from './src/Library/FlyControls.js';
         window.DDSLoader = DDSLoader;
+        window.FlyControls = FlyControls;
         window.OrbitControls = OrbitControls;
         window.TransformControls = TransformControls;
     </script>
@@ -241,13 +244,9 @@
             var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
             MANHUNT.engine.getScene().add( hemiLight );
 
-
             var player = MANHUNT.level.getStorage('entity').find('player(player)');
-            MANHUNT.camera.setLookAt(player.object);
+            MANHUNT.camera.lookAt(player.object);
 
-            // var clip = MANHUNT.level.getStorage('ifp').find('PlayerAnims', 'ASY_INMATE_IDLE_1');
-// console.log("CLIP", clip);
-            // MANHUNT.camera.setLookAt(MANHUNT.level.getStorage('entity').find('player(player)').object);
 
             // mlsA01CellFlicker();
 

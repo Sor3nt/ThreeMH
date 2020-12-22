@@ -193,6 +193,7 @@ MANHUNT.level = (function () {
 
                 //allow to click on a entity model
                 MANHUNT.entityInteractive.init();
+                MANHUNT.control.init();
 
                 typeof MANHUNT.sidebar.menu !== "undefined" && MANHUNT.sidebar.menu.init();
 
