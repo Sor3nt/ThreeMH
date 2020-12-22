@@ -9,14 +9,14 @@ MANHUNT.sidebar.elements.InputGroup = function (entries, type, callback) {
         _fields: {},
 
         _init: function () {
-            var container = document.createElement('div');
-            container.className = "element input-group";
+            var container = jQuery('<div>');
+            container.addClass("element input-group");
 
             for(var i in entries){
                 if (!entries.hasOwnProperty(i)) continue;
 
                 var field = self._createField(i, entries[i]);
-                container.appendChild(field.container);
+                container.append(field.container);
                 self._fields[i] = field;
 
                 if (typeof callback === "function"){
@@ -30,7 +30,6 @@ MANHUNT.sidebar.elements.InputGroup = function (entries, type, callback) {
 
         updateValue: function(label, value) {
             self._fields[label].setValue(value);
-
         },
 
         setOnChangeCallback: function(label, callback){
@@ -39,22 +38,22 @@ MANHUNT.sidebar.elements.InputGroup = function (entries, type, callback) {
 
         _createField: function (label, value) {
 
-            var template =
-                "<label>" + label + "</label>"
-            ;
+            var _label = jQuery('<label>').html(label);
+
+            var input = jQuery('<input>');
+            input.val(label);
+            input.attr('name', label);
+            input.attr('type', type);
 
             if (type === "checkbox"){
-                template +=  "<input name='"+label+"' type='" + type + "' " + (value === true ? "checked='checked'" : '') + ">"
+                input.prop('checked', true);
             }else{
-                template +=  "<input name='"+label+"' type='" + type + "' value='" + value + "'>"
+                input.val(value);
             }
 
-            var container = document.createElement('div');
-            container.className = "input label";
-            container.innerHTML = template;
-
-            var input = container.getElementsByTagName('input')[0];
-
+            var container = jQuery('<div>');
+            container.addClass("input label");
+            container.append(_label, input);
 
             return {
                 name: label,
@@ -63,19 +62,17 @@ MANHUNT.sidebar.elements.InputGroup = function (entries, type, callback) {
 
                 setValue: function (value) {
                     if (type === "checkbox"){
-                        if (value) input.setAttribute('checked', true);
-                        else input.removeAttribute('checked');
+                        input.prop('checked', value);
                     }else{
-                        input.value = value;
-
+                        input.val(value);
                     }
                 },
 
                 onChange: function (callback) {
                     if (type === "text"){
-                        input.onblur = callback;
+                        input.blur(callback);
                     }else{
-                        input.onchange = callback;
+                        input.change(callback);
 
                     }
                 }

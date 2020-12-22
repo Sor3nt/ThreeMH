@@ -70,7 +70,7 @@ MANHUNT.entity.abstract = function ( instEntity, object, model ) {
 
 
 
-
+    object.entity = self;
 
 
 

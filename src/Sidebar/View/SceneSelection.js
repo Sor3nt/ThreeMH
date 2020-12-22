@@ -10,8 +10,8 @@ MANHUNT.sidebar.view.SceneSelection = function () {
 
         _init: function () {
 
-            var container = document.createElement('div');
-            container.className = "view scene-selection";
+            var container = jQuery('<div>');
+            container.addClass("view scene-selection");
             self._elements.container = container;
 
             self._elements.scene = MANHUNT.sidebar.elements.InputGroup({
@@ -21,7 +21,7 @@ MANHUNT.sidebar.view.SceneSelection = function () {
                 bbox: false
             }, 'checkbox', self.onSelectionChanged);
 
-            container.appendChild(self._elements.scene.container);
+            container.append(self._elements.scene.container);
         },
 
         onSelectionChanged: function(event){

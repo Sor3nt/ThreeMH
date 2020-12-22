@@ -8,13 +8,18 @@ MANHUNT.sidebar.menu = (function () {
             selections: {},
         },
 
+        _callback: {
+            onObjectChanged: []
+        },
+
         _section : {},
         _activeSection : false,
+        _activeObject : false,
 
         init: function () {
-            self._elements.container = document.getElementById('menu');
-            self._elements.sections = document.getElementById('sections');
-            self._elements.selections = document.getElementById('selection');
+            self._elements.container = jQuery('#menu');
+            self._elements.sections = jQuery('#sections');
+            self._elements.selections = jQuery('#selection');
 
             self._createSections();
 
@@ -26,7 +31,7 @@ MANHUNT.sidebar.menu = (function () {
                 name: 'World',
                 icon: '🌎'
             });
-            self._section.world.addView('scene-selection');
+            self._section.world.addView('scene-selection', new MANHUNT.sidebar.view.SceneSelection());
 
             //todo: hide section für entity bauen basierend auf den inst class names
             //sprich alle hunter, alle basic....
@@ -36,8 +41,9 @@ MANHUNT.sidebar.menu = (function () {
                 icon: '🔎'
             });
 
-            self._section.entity.addView('entity-selection');
-            self._section.entity.addView('xyz');
+            self._section.entity.addView('entity-selection', new MANHUNT.sidebar.view.EntitySelection());
+            self._section.entity.addView('info-block', new MANHUNT.sidebar.view.InfoBlock());
+            self._section.entity.addView('xyz', new MANHUNT.sidebar.view.Xyz());
 
 
             self._section.trigger = new MANHUNT.sidebar.Section({
@@ -54,13 +60,13 @@ MANHUNT.sidebar.menu = (function () {
             //Append all sections into the sidebar
             for(var i in self._section){
                 if (!self._section.hasOwnProperty(i)) continue;
-                self._elements.selections.appendChild(self._section[i].sectionButton);
-                self._elements.sections.appendChild(self._section[i].container);
+                self._elements.selections.append(self._section[i].sectionButton);
+                self._elements.sections.append(self._section[i].container);
 
                 (function(element, sectionIndex){
-                    element.onclick = function () {
+                    element.click(function () {
                         MANHUNT.sidebar.menu.showSection(sectionIndex);
-                    }
+                    });
                 })(self._section[i].sectionButton, i);
             }
         },
@@ -78,6 +84,15 @@ MANHUNT.sidebar.menu = (function () {
         getSection: function (section) {
             if(typeof self._section[section] === "undefined") return false;
             return self._section[section];
+        },
+
+        object: function (object) {
+            if (typeof object === "undefined") return self._activeObject;
+            self._activeObject = object;
+
+            self._callback.onObjectChanged.forEach(function (callback) {
+                callback(object);
+            })
         }
 
 
@@ -85,6 +100,10 @@ MANHUNT.sidebar.menu = (function () {
 
 
     return {
+        onObjectChanged: function(callback){
+            self._callback.onObjectChanged.push(callback);
+        },
+        object: self.object,
         init: self.init,
         showSection: self.showSection,
         getSection: self.getSection

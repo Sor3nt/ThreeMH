@@ -5,30 +5,26 @@ MANHUNT.sidebar.elements.Dropdown = function ( values ) {
         container: {},
 
         _init: function () {
-
-            var container = document.createElement('select');
-            container.className = "element dropdown";
-
-
+            var container = jQuery('<select>');
+            container.addClass("element dropdown");
             self.container = container;
         },
 
         setValues: function(values){
-            self.container.innerHTML = "";
+            self.container.html("");
 
             values.forEach(function (value) {
 
-                var option = document.createElement('option');
-                option.value = value;
-                option.innerHTML = value;
+                var option = jQuery('<option>');
+                option.val(value);
+                option.html(value);
 
-                self.container.appendChild(option);
+                self.container.append(option);
 
             });
 
-            $(self.container).select2();
+            jQuery(self.container).select2();
         },
-
 
         onChangeCallback: function(callback){
             self.container.onchange = callback;
@@ -37,7 +33,6 @@ MANHUNT.sidebar.elements.Dropdown = function ( values ) {
     };
 
     self._init();
-
 
     return {
         container: self.container,

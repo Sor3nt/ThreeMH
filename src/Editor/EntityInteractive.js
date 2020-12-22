@@ -7,6 +7,9 @@ MANHUNT.entityInteractive = (function () {
         },
 
         _onClick: function ( event ) {
+
+            if (MANHUNT.control.active() === "transform") return;
+
             var camera = MANHUNT.camera.getCamera();
             var domElement = MANHUNT.engine.getRenderer().domElement;
             var scene = MANHUNT.engine.getScene();
@@ -27,6 +30,7 @@ MANHUNT.entityInteractive = (function () {
                 console.log('[MANHUNT.entityInteractive] Object clicked', intersects[0].object);
                 MANHUNT.camera.lookAt(intersects[0].object);
                 MANHUNT.control.active('transform');
+                MANHUNT.sidebar.menu.object(intersects[0].object);
             }
         }
     };

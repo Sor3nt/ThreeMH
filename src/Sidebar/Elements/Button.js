@@ -8,17 +8,11 @@ MANHUNT.sidebar.elements.Button = function (label) {
 
         _init: function () {
 
-            var template =
-                "<button>" + label + "</button>"
-            ;
+            self._button = jQuery('<option>').html(label);
 
-            var container = document.createElement('div');
-            container.className = "element button";
-            container.innerHTML = template;
-
-
-            self._button = container.getElementsByTagName('button')[0];
-
+            var container = jQuery('<div>');
+            container.addClass("element button");
+            container.append(self._button);
 
             self.container = container;
         },
@@ -26,13 +20,11 @@ MANHUNT.sidebar.elements.Button = function (label) {
 
         setOnClickCallback: function(callback){
             self._button.onclick = callback;
-
         },
 
     };
 
     self._init();
-
 
     return {
         container: self.container,

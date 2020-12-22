@@ -8,31 +8,18 @@ MANHUNT.sidebar.Section = function (settings) {
         _view : {},
 
         _init: function () {
-            self.container = document.createElement('div');
-            self.container.className = "section";
+            self.container = jQuery('<div>');
+            self.container.addClass("section");
 
 
-            self.sectionButton = document.createElement('div');
-            self.sectionButton.innerHTML = settings.icon;
+            self.sectionButton = jQuery('<div>');
+            self.sectionButton.html(settings.icon);
 
             self.hide();
         },
 
-        addView: function ( viewName ) {
-            viewName = viewName.toLowerCase();
-
-            var view = false;
-            switch (viewName) {
-
-                case 'xyz': view = new MANHUNT.sidebar.view.Xyz(); break;
-                case 'entity-selection': view = new MANHUNT.sidebar.view.EntitySelection(); break;
-                case 'scene-selection': view = new MANHUNT.sidebar.view.SceneSelection(); break;
-                default:
-                    console.log("[MANHUNT.sidebar.menu] View is unknown", view);
-                    return;
-            }
-
-            self.container.appendChild(view.container);
+        addView: function (viewName, view ) {
+            self.container.append(view.container);
             self._view[viewName] = view;
         },
 
@@ -43,15 +30,15 @@ MANHUNT.sidebar.Section = function (settings) {
         },
 
         hide: function (view) {
-            if (typeof view === "undefined") self.container.style.display = "none";
+            if (typeof view === "undefined") self.container.hide();
             else self._view[view].hide();
-            self.sectionButton.className = "";
+            self.sectionButton.removeClass('active');
         },
 
         show: function (view) {
-            if (typeof view === "undefined") self.container.style.display = "block";
+            if (typeof view === "undefined") self.container.show();
             else self._view[view].show();
-            self.sectionButton.className = "active";
+            self.sectionButton.addClass("active");
         },
 
     };

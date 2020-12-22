@@ -7,19 +7,16 @@ MANHUNT.sidebar.view.construct = function ( entry ) {
         },
 
         hide: function () {
-            self._elements.container.style.display = "none";
+            self._elements.container.hide();
         },
 
         show: function () {
-            self._elements.container.style.display = "block";
+            self._elements.container.show();
         },
 
 
     };
 
-    return {
-        hide: self.hide,
-        show: self.show,
-    };
+    return self;
 
 };

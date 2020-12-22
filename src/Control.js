@@ -54,8 +54,8 @@ MANHUNT.control = (function () {
             self._control.transform.addEventListener( 'change', function ( event ) {
                 if (self._active !== "transform") return;
 
-                // var section = MANHUNT.sidebar.menu.getSection('entity');
-                // section && section.getView('xyz').update();
+                var section = MANHUNT.sidebar.menu.getSection('entity');
+                section && section.getView('xyz').update();
             } );
 
             self._control.transform.addEventListener( 'dragging-changed', function ( event ) {
@@ -127,6 +127,8 @@ MANHUNT.control = (function () {
                     var player = MANHUNT.level.getStorage('entity').find('player(player)');
                     MANHUNT.camera.lookAt(player.object);
                     self.active('default');
+
+                    MANHUNT.sidebar.menu.object(player.object);
 
                     break;
                 case 38: /*up*/

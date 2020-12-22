@@ -180,6 +180,7 @@ MANHUNT.fileLoader.BSP = function () {
 
                 var material = new THREE.MeshBasicMaterial({
                     wireframe	: true,
+                    color: 0xff11ff
                 });
 
                 var mesh = new THREE.Mesh(geometry, material);
@@ -238,10 +239,11 @@ MANHUNT.fileLoader.BSP = function () {
                                 sceneBBoxSize.z,
                             ),
                             new THREE.MeshBasicMaterial({
-                                // wireframe	: true,
-                                color: 0xff66ff
+                                wireframe	: true
                             })
                         );
+                        SceneRootBoundBox.position.copy(sceneBBoxPosition);
+                        // SceneRootBoundBox.position.multiply(new THREE.Vector3(48,48,48));
 
                         SceneRootBoundBox.name = 'scene3';
 
